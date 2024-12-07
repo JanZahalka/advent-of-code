@@ -20,9 +20,12 @@ def equation_valid(
     Checks whether the equation is valid.
     """
 
-    if running_result == val:
-        return True, text_repre
-    if running_result > val or len(terms) == 0:
+    if running_result > val:
+        return False, None
+
+    if len(terms) == 0:
+        if running_result == val:
+            return True, text_repre
         return False, None
 
     sum_valid, sum_repre = equation_valid(
@@ -33,6 +36,9 @@ def equation_valid(
         text_repre + f" + {terms[0]}",
     )
 
+    if sum_valid:
+        return True, sum_repre
+
     mul_valid, mul_repre = equation_valid(
         val,
         terms[1:],
@@ -41,8 +47,8 @@ def equation_valid(
         text_repre + f" * {terms[0]}",
     )
 
-    eq_valid = sum_valid or mul_valid
-    result_repre = sum_repre if sum_repre is not None else mul_repre
+    if mul_valid:
+        return True, mul_repre
 
     if concat_enabled:
         concat_valid, concat_repre = equation_valid(
@@ -53,10 +59,10 @@ def equation_valid(
             text_repre + f" || {terms[0]}",
         )
 
-        eq_valid = eq_valid or concat_valid
-        result_repre = result_repre if result_repre is not None else concat_repre
+        if concat_valid:
+            return True, concat_repre
 
-    return eq_valid, result_repre
+    return False, None
 
 
 def first_star() -> None:
@@ -91,7 +97,7 @@ def second_star() -> None:
 
     print("+++ SECOND STAR PROBLEM +++")
 
-    sum_correct = 0
+    sum_concat = 0
     i = 0
 
     with open(INPUT_PATH, "r", encoding="utf-8") as f:
@@ -105,14 +111,11 @@ def second_star() -> None:
             )
 
             if is_eq_correct:
-                sum_correct += val
+                sum_concat += val
 
             i += 1
 
-            if i <= 10:
-                print(f"{val} = {text_repre}")
-
-    print(f"Sum of the values corresponding to correct equations: {sum_correct}")
+    print(f"Sum of the values corresponding to correct equations: {sum_concat}")
 
 
 if __name__ == "__main__":

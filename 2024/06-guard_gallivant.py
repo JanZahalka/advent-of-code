@@ -101,12 +101,13 @@ def second_star(visited_orig: list[list[tuple[int], tuple[int]]]) -> None:
     floor_map, r0, c0 = load_input_find_init_pos()
 
     valid_obstacle_positions = set()
+    n_valid_obstacles = 0
 
     # Go over the locations visited in the normal path sans the initial position
     for p in range(1, len(visited_orig)):
         # The guard starts at the previous position in the given direction
         prev_pos = visited_orig[p - 1]
-        """
+
         r = prev_pos[0][0]
         c = prev_pos[0][1]
         r_dir = prev_pos[1][0]
@@ -116,6 +117,7 @@ def second_star(visited_orig: list[list[tuple[int], tuple[int]]]) -> None:
         c = c0
         r_dir = -1
         c_dir = 0
+        """
         # print(f"Start at {r, c}, direction ({r_dir}, {c_dir})")
 
         # The obstacle is placed at the position
@@ -169,22 +171,24 @@ def second_star(visited_orig: list[list[tuple[int], tuple[int]]]) -> None:
                 looped = True
                 break
 
+            visited_obst.append([(r, c), (r_dir, c_dir)])
+
             # If obstacle ahead, turn right
             if floor_map_obst[r + r_dir][c + c_dir] in ["#", "O"]:
                 r_dir, c_dir = TURNS[(r_dir, c_dir)]
             # Otherwise record unique position (if applicable) and go forward
             else:
-                visited_obst.append([(r, c), (r_dir, c_dir)])
                 if floor_map_obst[r][c] == ".":
                     floor_map_obst[r][c] = "X"
                 r += r_dir
                 c += c_dir
 
         if looped:
-            valid_obstacle_positions.add((r, c))
+            n_valid_obstacles += 1
 
         if (p + 1) % 100 == 0:
             print(f"{p+1} candidates processed.")
+            """
             print(f"Candidate {p}: {looped}")
 
             fm_path = Path(__file__).parent / "inputs" / f"06_output_2_{p}.txt"
@@ -192,10 +196,9 @@ def second_star(visited_orig: list[list[tuple[int], tuple[int]]]) -> None:
             with open(fm_path, "w", encoding="utf-8") as f:
                 for row in floor_map_obst:
                     f.write("".join(row) + "\n")
+            """
 
-    print(
-        f"Number of obstacles that can cause a guard loop: {len(valid_obstacle_positions)}"
-    )
+    print(f"Number of obstacles that can cause a guard loop: {n_valid_obstacles}")
 
 
 if __name__ == "__main__":
