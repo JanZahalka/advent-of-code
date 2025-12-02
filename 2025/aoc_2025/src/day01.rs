@@ -56,24 +56,13 @@ fn puzzle(input_path: &Path, puzzle_no: i32) -> Result<(), Box<dyn Error>> {
                 }
             }
             2 => {
-                let mut new_position = position + dir_multiplier * n_steps;
+                let huge_constant = 1000000;
+                let old_position = position + huge_constant;
+                let mut new_position = old_position + dir_multiplier * n_steps;
 
-                let mut n_zero_ticked = (new_position / 100 - position / 100).abs();
-                if n_zero_ticked == 0 && position.signum() != new_position.signum() {
-                    n_zero_ticked += 1;
-                }
+                let n_zero_ticked = (new_position / 100 - old_position / 100).abs();
 
-                new_position = new_position.rem_euclid(100);
-
-                if i < 200 {
-                    println!(
-                        "Old position: {}, number of steps {}, new position: {}, zero ticked: {}",
-                        position,
-                        dir_multiplier * n_steps,
-                        new_position,
-                        n_zero_ticked
-                    );
-                }
+                new_position = (new_position - huge_constant).rem_euclid(100);
 
                 position = new_position;
                 password += n_zero_ticked
