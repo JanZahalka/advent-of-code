@@ -2,7 +2,6 @@ use std::{
     error::Error,
     fs::File,
     io::{BufRead, BufReader},
-    ops::Rem,
     path::{Path, PathBuf},
 };
 
