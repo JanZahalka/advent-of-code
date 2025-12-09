@@ -9,6 +9,7 @@ pub fn run(input_dir: &str) -> Result<(), Box<dyn Error>> {
     let input_path = PathBuf::from(input_dir).join("input03.txt");
 
     puzzle(&input_path, 1)?;
+    puzzle(&input_path, 2)?;
 
     Ok(())
 }
@@ -20,41 +21,49 @@ fn puzzle(input_path: &Path, puzzle_no: i32) -> Result<(), Box<dyn Error>> {
     let file = File::open(input_path)?;
     let reader = BufReader::new(file);
 
-    let mut joltage_total = 0;
+    let joltage_len = match puzzle_no {
+        1 => 2,
+        2 => 12,
+        _ => return Err(format!("Invalid puzzle no. {}", puzzle_no).into()),
+    };
+
+    let mut joltage_total: i64 = 0;
 
     for line in reader.lines() {
         let line = line?;
         let line_trimmed = line.trim_end();
 
-        let mut max_first = -1;
-        let mut i_max_first = 0;
-        let mut max_second = -1;
-
-        for (i, c) in line_trimmed
-            .chars()
-            .enumerate()
-            .take(line_trimmed.len() - 1)
-        {
-            let digit = c.to_digit(10).unwrap() as i32;
-
-            if digit > max_first {
-                max_first = digit;
-                i_max_first = i;
-            }
-        }
-
-        for c in line_trimmed.chars().skip(i_max_first + 1) {
-            let digit = c.to_digit(10).unwrap() as i32;
-
-            if digit > max_second {
-                max_second = digit;
-            }
-        }
-
-        let joltage = max_first * 10 + max_second;
-        joltage_total += joltage;
+        let joltage_str = recursive_joltage(line_trimmed, joltage_len);
+        joltage_total += joltage_str.parse::<i64>().unwrap();
     }
 
     println!("{}", joltage_total);
     Ok(())
+}
+
+fn recursive_joltage(battery_bank: &str, joltage_pos: usize) -> String {
+    if joltage_pos == 0 {
+        return "".to_string();
+    }
+
+    let mut max = 0;
+    let mut i_max: usize = 0;
+
+    for (i, c) in battery_bank
+        .chars()
+        .take(battery_bank.len() - joltage_pos + 1)
+        .enumerate()
+    {
+        let digit = c.to_digit(10).unwrap() as i32;
+
+        if digit > max {
+            max = digit;
+            i_max = i;
+        }
+    }
+
+    let joltage_lower = recursive_joltage(&battery_bank[i_max + 1..], joltage_pos - 1);
+    let joltage = format!("{}{}", max, joltage_lower);
+
+    joltage
 }
