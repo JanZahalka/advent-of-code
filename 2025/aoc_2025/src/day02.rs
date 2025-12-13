@@ -46,7 +46,7 @@ fn puzzle(input_path: &Path, puzzle_no: i32) -> Result<(), Box<dyn Error>> {
 }
 
 fn invalid_puzzle1(s: &str) -> bool {
-    if s.len() % 2 != 0 {
+    if s.len().is_multiple_of(2) {
         return false;
     }
 
@@ -84,7 +84,7 @@ fn pattern_lengths(n: usize) -> Vec<usize> {
     let sqrt_n = (n as f64).sqrt() as usize;
 
     for i in 1..=sqrt_n {
-        if n % i == 0 {
+        if n.is_multiple_of(i) {
             divisors.push(i);
 
             if i != n / i && n / i != n {
