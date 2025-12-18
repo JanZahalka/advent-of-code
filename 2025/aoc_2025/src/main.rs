@@ -5,6 +5,7 @@ mod day01;
 mod day02;
 mod day03;
 mod day04;
+mod day05;
 
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
@@ -15,7 +16,7 @@ struct Args {
 
 type DayRunner = fn(&str) -> Result<(), Box<dyn Error>>;
 
-const DAY_FNS: &[DayRunner] = &[day01::run, day02::run, day03::run, day04::run];
+const DAY_FNS: &[DayRunner] = &[day01::run, day02::run, day03::run, day04::run, day05::run];
 
 fn main() {
     let args = Args::parse();
